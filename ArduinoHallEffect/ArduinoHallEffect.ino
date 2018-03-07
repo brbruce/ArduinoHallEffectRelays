@@ -1,16 +1,21 @@
 /*
   Arduino Hall Effect Sensor Project
+  by Brian Bruce
+
+  Code copied from:
   by Arvind Sanjeev
   Please check out  http://diyhacking.com for the tutorial of this project.
   DIY Hacking
 */
 
-const byte interruptPin = 18; // For Mega can be 2, 3, 18, 19, 20, 21
-volatile byte counter;
-volatile byte half_revolutions;
-unsigned int rpm;
-unsigned long timeold;
+// Define pin used for the hall effect sensor out.  Must be an interrupt pin.
+// For Mega can be 2, 3, 18, 19, 20, 21
+const byte interruptPin = 18; 
 
+// Counter for sensor.  Must be volatile if used in an interrupt function.
+volatile byte counter;
+
+// Array used to drive a 7 segment LED display to show the counter
 int num_array[10][7] = {  { 1,1,1,1,1,1,0 },    // 0
                           { 0,1,1,0,0,0,0 },    // 1
                           { 1,1,0,1,1,0,1 },    // 2
@@ -27,11 +32,13 @@ void Num_Write(int);
 
 void setup()
 {
+  // Must initialize Serial to see Serial.println output
   Serial.begin(115200);
+
+  // Set up interrupt function to be called when the signal on the arduino interrupt pin rises.
+  attachInterrupt(digitalPinToInterrupt(interruptPin), magnet_detect, RISING);
   
-  attachInterrupt(digitalPinToInterrupt(interruptPin), magnet_detect, RISING);//Initialize the intterrupt pin (Arduino digital pin 2)
-  
-  // set pin modes
+  // Set pin modes for the led counter display
   pinMode(2, OUTPUT);   
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
@@ -50,17 +57,19 @@ void loop() //Measure RPM
   // Use millis() function to get current time in millis for calculating elapsed times and speeds, etc.
 }
 
-void magnet_detect() //This function is called whenever a magnet/interrupt is detected by the arduino.
+//This function is called whenever a magnet/interrupt is detected by the arduino.
+void magnet_detect() 
 {
   counter++;
   Serial.print("Detected: ");
   Serial.println(counter);
+  
   // LED counter
-  if (counter > 9) { counter = 0; }
+  if (counter > 9) { counter = 0; } // Can only show the ones digit for now.
   Num_Write(counter);
 }
 
-// this functions writes values to the sev seg pins  
+// this functions writes values 0-9 to the seven seg led pins  
 void Num_Write(int number) 
 {
   int pin= 2;
