@@ -6,6 +6,12 @@
   by Arvind Sanjeev
   Please check out  http://diyhacking.com for the tutorial of this project.
   DIY Hacking
+
+  Reference for Hall effect sensor: https://maker.pro/education/a-simple-guide-to-using-a-hall-effect-sensor-with-arduino
+
+  Reference for 7 segment led: https://www.allaboutcircuits.com/projects/interface-a-seven-segment-display-to-an-arduino/
+  (NOTE: The diagram on this page is wrong.  Connect the common line to GND, not the 5v, as this is a common cathod unit.)
+  
 */
 
 // Define pin used for the hall effect sensor out.  Must be an interrupt pin.
@@ -13,7 +19,7 @@
 const byte interruptPin = 18; 
 
 // Counter for sensor.  Must be volatile if used in an interrupt function.
-volatile byte counter;
+volatile byte counter = 0;
 
 // Array used to drive a 7 segment LED display to show the counter
 int num_array[10][7] = {  { 1,1,1,1,1,1,0 },    // 0
@@ -47,10 +53,12 @@ void setup()
   pinMode(7, OUTPUT);
   pinMode(8, OUTPUT);
   
+  Num_Write(counter);
+  
   Serial.println("Starting dude!");
 }
 
-void loop() //Measure RPM
+void loop()
 {
   // Nothing in the loop.  Using an interrupt function instead.
   
