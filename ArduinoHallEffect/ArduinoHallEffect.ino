@@ -41,6 +41,9 @@ void setup()
   // Must initialize Serial to see Serial.println output
   Serial.begin(115200);
 
+  // This does not seem to be necessary but I tried it and it did not hurt.
+  //pinMode(interruptPin, INPUT_PULLUP);
+
   // Set up interrupt function to be called when the signal on the arduino interrupt pin rises.
   attachInterrupt(digitalPinToInterrupt(interruptPin), magnet_detect, RISING);
   
